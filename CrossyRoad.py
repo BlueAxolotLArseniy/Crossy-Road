@@ -3,9 +3,9 @@ import random
 from direct.actor.Actor import Actor
 
 gen = 15
-
+camera_speed = 0
 app = Ursina()
-playerX = Entity(scale=(.2, .2, .2), position=(2, 0, -7.5))
+playerX = Entity(scale=(.2, .2, .2), position=(2, 0, -8))
 playerX.rotation_y = 180
 player = Entity(scale=(.3, .3, .3))
 test_cube = Entity(model='cube', position=(-2, 0, 0))
@@ -43,9 +43,14 @@ def generation():
         Road(gen)
     else:
         Grass(gen)
-    camera.z += 1
     gen += 1
     print('move')
+
+def movecamera():
+    noun_x = playerX.z - (camera.z + 11.5)
+    noun_x /= 2
+    camera_speed = noun_x / 90
+    camera.z += camera_speed
 
 for i in range(5, 20):
     Grass(-i)
@@ -62,5 +67,6 @@ def input(key):
 
 
 def update():
-    pass
+    movecamera()
+
 app.run()
