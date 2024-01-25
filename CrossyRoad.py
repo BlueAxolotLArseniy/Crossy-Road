@@ -5,7 +5,7 @@ from direct.actor.Actor import Actor
 gen = 15
 camera_speed = 0
 app = Ursina()
-playerX = Entity(scale=(.2, .2, .2), position=(2, 0, -8))
+playerX = Entity(scale=(.2, .2, .2), position=(2, -0.9, -8.5))
 playerX.rotation_y = 180
 player = Entity(scale=(.3, .3, .3))
 test_cube = Entity(model='cube', position=(-2, 0, 0))
@@ -49,7 +49,7 @@ def generation():
 def movecamera():
     noun_x = playerX.z - (camera.z + 11.5)
     noun_x /= 2
-    camera_speed = noun_x / 90
+    camera_speed = noun_x / 50
     camera.z += camera_speed
 
 for i in range(5, 20):
