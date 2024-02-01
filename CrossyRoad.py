@@ -12,6 +12,7 @@ gen = 15
 camera_speed = 0
 app = Ursina()
 list_of_roads = []
+list_of_cars = []
 
 playerX = Entity(scale=(.2, .2, .2), position=(2, -0.9, -8.5))
 playerX.rotation_y = 180
@@ -40,9 +41,10 @@ class Road():
 class Car():
     def __init__(self, z, color):
         if color == 'red':
-            xmodel = Entity(scale=(.3, .3, .3), position=(-10, -0.9, z))
-            Xgrass = Actor('models/car/defolte_red/car_red.glb')
-            Xgrass.reparentTo(xmodel)
+            self.xmodel = Entity(scale=(.3, .3, .3), position=(-10, -0.9, z+1))
+            self.xmodel.rotation_y = 180
+            Xcar = Actor('models/car/defolte_red/car_red.glb')
+            Xcar.reparentTo(self.xmodel)
 
 #models and others
 
@@ -53,6 +55,8 @@ Aplayer.reparentTo(playerX)
 
 #funcs
 
+
+
 def generation():
     global gen, camera
     if random.randint(0, 2) != 0:
@@ -61,11 +65,10 @@ def generation():
     else:
         Grass(gen)
     gen += 1
-    print('move')
 
 def movecamera():
     global camera_speed
-    noun_x = playerX.z - (camera.z + 11.5)
+    noun_x = playerX.z - (camera.z + 15)
     noun_x /= 50
     camera_speed = noun_x
 
@@ -90,6 +93,8 @@ def input(key):
     if key == 'w':
         generation()
         playerX.z += 1
+    if key == 'q':
+        sys.exit()
 
 
 def update():
@@ -99,9 +104,20 @@ def update():
     if playerX.z - camera.z < 10:
         sys.exit()
     wait_car += 1
-    if wait_car % 100 == 0:
+    if wait_car % 20 == 0:
         for i in list_of_roads:
-            Car(i, 'red')
-            print('awd')
+            if random.randint(0, 9) == 0:
+                q = Car(i, 'red')
+                list_of_cars.append(q)
+            else:
+                pass
+        for i in list_of_roads:
+            if playerX.z - i > 10:
+                list_of_roads.remove(i)
+    if wait_car % 300:
+        for i in list_of_cars:
+            i.xmodel.x += 0.1
+
+
 
 app.run()
