@@ -14,7 +14,7 @@ app = Ursina()
 list_of_roads = []
 list_of_cars = []
 
-playerX = Entity(scale=(.2, .2, .2), position=(2, -0.9, -8.5))
+playerX = Entity(scale=(.2, .2, .2), position=(1.7, -0.5, -8.5), collider='mesh')
 playerX.rotation_y = 180
 player = Entity(scale=(.3, .3, .3))
 test_cube = Entity(model='cube', position=(-2, 0, 0))
@@ -55,8 +55,6 @@ Aplayer.reparentTo(playerX)
 
 #funcs
 
-
-
 def generation():
     global gen, camera
     if random.randint(0, 2) != 0:
@@ -87,12 +85,25 @@ def input(key):
     if key == 'left mouse down':
         generation()
         playerX.z += 1
+        playerX.rotation_y = 180
     if key == 's':
         generation()
         playerX.z -= 1
+        playerX.rotation_y = 0
     if key == 'w':
         generation()
         playerX.z += 1
+        playerX.rotation_y = 180
+    if key == 'a':
+        generation()
+        if playerX.x > -3.7:
+            playerX.x -= 1
+            playerX.rotation_y = 90
+    if key == 'd':
+        generation()
+        if playerX.x < 6.7:
+            playerX.x += 1
+            playerX.rotation_y = 270
     if key == 'q':
         sys.exit()
 
