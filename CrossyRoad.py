@@ -14,7 +14,7 @@ app = Ursina()
 list_of_roads = []
 list_of_cars = []
 
-playerX = Entity(scale=(.2, .2, .2), position=(1.7, -0.5, -8.5), collider='mesh')
+playerX = Entity(model='models/player/chicken/chiken.glb', scale=(.2, .2, .2), position=(1.7, -0.5, -8.5), collider='box')
 playerX.rotation_y = 180
 player = Entity(scale=(.3, .3, .3))
 test_cube = Entity(model='cube', position=(-2, 0, 0))
@@ -28,30 +28,27 @@ camera.x = 9
 
 class Grass():
     def __init__(self, z):
-        xmodel = Entity(scale=(.3, .3, .3), position=(2, -1, z))
-        Xgrass = Actor('models/ground/grass/grass.glb')
-        Xgrass.reparentTo(xmodel)
+        xmodel = Entity(model='models/ground/grass/grass.glb', scale=(.3, .3, .3), position=(2, -1, z))
 
 class Road():
     def __init__(self, z):
-        xmodel = Entity(scale=(.3, .3, .3), position=(2, -1, z))
-        Xgrass = Actor('models/road/defolte/road.glb')
-        Xgrass.reparentTo(xmodel)
+        xmodel = Entity(model='models/road/defolte/road.glb', scale=(.3, .3, .3), position=(2, -1, z))
 
 class Car():
     def __init__(self, z, color):
         if color == 'red':
-            self.xmodel = Entity(scale=(.3, .3, .3), position=(-10, -0.9, z+1))
+            self.xmodel = Entity(model='models/car/defolte_red/car_red.glb', scale=(.3, .3, .3), position=(-10, -0.9, z+1), collider='box')
             self.xmodel.rotation_y = 180
-            Xcar = Actor('models/car/defolte_red/car_red.glb')
-            Xcar.reparentTo(self.xmodel)
+class Tree():
+    def __init__(self, z, type, x):
+        if type == '2':
+            self.xmodel = Entity(model='models/tree/defolte/tree2/tree2.glb', scale=(.3, .3, .3), position=(x, -0.9, z+1), collider='box')
+            self.xmodel.rotation_y = 180
 
 #models and others
 
 Acar = Actor("models/car/defolte_red/car_red.glb")
 Acar.reparentTo(player)
-Aplayer = Actor('models/player/chicken/chiken.glb')
-Aplayer.reparentTo(playerX)
 
 #funcs
 
@@ -62,6 +59,7 @@ def generation():
         list_of_roads.append(gen)
     else:
         Grass(gen)
+        Tree(gen, '2', random.randint(-3, 6)+.7)
     gen += 1
 
 def movecamera():
@@ -128,6 +126,9 @@ def update():
     if wait_car % 300:
         for i in list_of_cars:
             i.xmodel.x += 0.1
+    if len(playerX.intersects().entities) > 1 or len(playerX.intersects().hits) > 1:
+        print('interaction')
+    print(distance(playerX, player))
 
 
 
