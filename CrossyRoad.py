@@ -1,3 +1,4 @@
+#V0.0010
 #all import
 
 from ursina import *
@@ -78,6 +79,12 @@ def movecamera():
     if camera_speed > 0:
         camera.z += camera_speed
 
+def move_car():
+    global wait_car, list_of_cars
+    if wait_car % 300:
+        for i in list_of_cars:
+            i.xmodel.x += 0.1
+
 for i in range(5, 20):
     Grass(-i)
 for i in range(-4, 15):
@@ -87,6 +94,32 @@ for i in range(-4, 15):
     else:
         Grass(i)
         objects += 1
+
+def remove_gen():
+    global list_of_roads, playerX
+    for i in list_of_roads:
+        if playerX.z - i > 10:
+            list_of_roads.remove(i)
+
+def create_car():
+    global wait_car, list_of_roads, objects, list_of_cars
+    if wait_car % 20 == 0:
+        for i in list_of_roads:
+            if random.randint(0, 9) == 0:
+                q = Car(i, 'red')
+                objects += 1
+                list_of_cars.append(q)
+            else:
+                pass
+
+def cross_tree():
+    global playerX, last_key
+    if str(playerX.intersects().entities).find("model='models/tree/defolte/tree2/tree2'") != -1:
+        print('пересечение с деревом')
+        if last_key == 'w': playerX.z -= 1
+        if last_key == 's': playerX.z += 1
+        if last_key == 'a': playerX.x += 1
+        if last_key == 'd': playerX.x -= 1
 
 def input(key):
     global last_key
@@ -128,29 +161,12 @@ def update():
     if playerX.z - camera.z < 10:
         sys.exit()
     wait_car += 1
-    if wait_car % 20 == 0:
-        for i in list_of_roads:
-            if random.randint(0, 9) == 0:
-                q = Car(i, 'red')
-                objects += 1
-                list_of_cars.append(q)
-            else:
-                pass
-        for i in list_of_roads:
-            if playerX.z - i > 10:
-                list_of_roads.remove(i)
-    if wait_car % 300:
-        for i in list_of_cars:
-            i.xmodel.x += 0.1
+    create_car()
+    remove_gen()
+    move_car()
     if str(playerX.intersects().entities).find("model='models/car/defolte_red/car_red'") != -1:
         print('пересечение с машиной')
-    if str(playerX.intersects().entities).find("model='models/tree/defolte/tree2/tree2'") != -1:
-        print('пересечение с деревом')
-        if last_key == 'w': playerX.z -= 1
-        if last_key == 's': playerX.z += 1
-        if last_key == 'a': playerX.x += 1
-        if last_key == 'd': playerX.x -= 1
-    # print(distance(playerX, player))
+    cross_tree()
     print(objects)
 
 
