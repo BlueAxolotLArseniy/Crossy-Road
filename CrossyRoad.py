@@ -1,4 +1,4 @@
-#V0.0010
+#V0.0011
 #all import
 
 from ursina import *
@@ -20,7 +20,7 @@ list_of_cars = []
 list_of_tree = []
 list_of_all_models = []
 
-playerX = Entity(model='models/player/chicken/chiken.glb', scale=(.2, .2, .2), position=(1.7, -0.5, -8.5), collider='box')
+playerX = Entity(model='models/player/chicken/chiken.glb', scale=(.2, .2, .2), position=(0, -0.5, -8), collider='box')
 playerX.rotation_y = 180
 player = Entity(scale=(.3, .3, .3))
 test_cube = Entity(model='cube', position=(-2, 0, 0))
@@ -34,21 +34,21 @@ camera.x = 9
 
 class Grass():
     def __init__(self, z):
-        self.xmodel = Entity(model='models/ground/grass/grass.glb', scale=(.3, .3, .3), position=(2, -1, z))
+        self.xmodel = Entity(model='models/ground/grass/grass.glb', scale=(.3, .3, .3), position=(0, -1, z))
 
 class Road():
     def __init__(self, z):
-        self.xmodel = Entity(model='models/road/defolte/road.glb', scale=(.3, .3, .3), position=(2, -1, z))
+        self.xmodel = Entity(model='models/road/defolte/road.glb', scale=(.3, .3, .3), position=(0, -1, z))
 
 class Car():
     def __init__(self, z, color):
         if color == 'red':
-            self.xmodel = Entity(model='models/car/defolte_red/car_red.glb', scale=(.3, .3, .3), position=(-10, -0.9, z+1), collider='box')
+            self.xmodel = Entity(model='models/car/defolte_red/car_red.glb', scale=(.23, .23, .23), position=(-12, -.7, z), collider='box')
             self.xmodel.rotation_y = 180
 class Tree():
     def __init__(self, z, type, x):
         if type == '2':
-            self.xmodel = Entity(model='models/tree/defolte/tree2/tree2.glb', scale=(.2, .2, .2), position=(x-0.4, -0.9, z+0.4), collider='box')
+            self.xmodel = Entity(model='models/tree/defolte/tree2/tree2.glb', scale=(.2, .2, .2), position=(x, -0.5, z+0.2), collider='box')
             self.xmodel.rotation_y = 180
 
 #models and others
@@ -169,6 +169,7 @@ def input(key):
             playerX.rotation_y = 270
     if key == 'q':
         sys.exit()
+    cross_tree()
 
 
 def update():
@@ -184,7 +185,7 @@ def update():
     if str(playerX.intersects().entities).find("model='models/car/defolte_red/car_red'") != -1:
         print('пересечение с машиной')
     cross_tree()
-    remove_models()
+    #remove_models()
 
     print(objects)
 
