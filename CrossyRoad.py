@@ -8,6 +8,7 @@ import sys
 
 #start
 
+q = None #no global!
 objects = 3
 last_key = None
 wait_car = 0
@@ -17,6 +18,7 @@ app = Ursina()
 list_of_roads = []
 list_of_cars = []
 list_of_tree = []
+list_of_all_models = []
 
 playerX = Entity(model='models/player/chicken/chiken.glb', scale=(.2, .2, .2), position=(1.7, -0.5, -8.5), collider='box')
 playerX.rotation_y = 180
@@ -32,11 +34,11 @@ camera.x = 9
 
 class Grass():
     def __init__(self, z):
-        xmodel = Entity(model='models/ground/grass/grass.glb', scale=(.3, .3, .3), position=(2, -1, z))
+        self.xmodel = Entity(model='models/ground/grass/grass.glb', scale=(.3, .3, .3), position=(2, -1, z))
 
 class Road():
     def __init__(self, z):
-        xmodel = Entity(model='models/road/defolte/road.glb', scale=(.3, .3, .3), position=(2, -1, z))
+        self.xmodel = Entity(model='models/road/defolte/road.glb', scale=(.3, .3, .3), position=(2, -1, z))
 
 class Car():
     def __init__(self, z, color):
@@ -57,16 +59,19 @@ Acar.reparentTo(player)
 #funcs
 
 def generation():
-    global gen, camera, objects
+    global gen, camera, objects, list_of_all_models
     if random.randint(0, 2) != 0:
-        Road(gen)
+        list_of_all_models.append(Road(gen))
         list_of_roads.append(gen)
         objects += 1
     else:
-        Grass(gen)
-        Tree(gen, '2', random.randint(-3, 6))
-        Tree(gen, '2', random.randint(-3, 6))
-        Tree(gen, '2', random.randint(-3, 6))
+        list_of_all_models.append(Grass(gen))
+        q = Tree(gen, '2', random.randint(-3, 6))
+        list_of_all_models.append(q)
+        q = Tree(gen, '2', random.randint(-3, 6))
+        list_of_all_models.append(q)
+        q = Tree(gen, '2', random.randint(-3, 6))
+        list_of_all_models.append(q)
         objects += 4
     gen += 1
 
@@ -89,10 +94,13 @@ for i in range(5, 20):
     Grass(-i)
 for i in range(-4, 15):
     if random.randint(0, 1) == 0:
-        Road(i)
+        q = Road(i)
+        list_of_all_models.append(q)
+
         objects += 1
     else:
-        Grass(i)
+        q = Grass(i)
+        list_of_all_models.append(q)
         objects += 1
 
 def remove_gen():
@@ -100,6 +108,14 @@ def remove_gen():
     for i in list_of_roads:
         if playerX.z - i > 10:
             list_of_roads.remove(i)
+
+def remove_models():
+    global list_of_all_models, playerX
+    for i in list_of_all_models:
+        if playerX.z - i.xmodel.z > 1:
+            # i.xmodel.disable()
+            i.xmodel.destroy()
+            # list_of_all_models.remove(i.xmodel)
 
 def create_car():
     global wait_car, list_of_roads, objects, list_of_cars
@@ -109,6 +125,7 @@ def create_car():
                 q = Car(i, 'red')
                 objects += 1
                 list_of_cars.append(q)
+                list_of_all_models.append(q)
             else:
                 pass
 
@@ -167,6 +184,8 @@ def update():
     if str(playerX.intersects().entities).find("model='models/car/defolte_red/car_red'") != -1:
         print('пересечение с машиной')
     cross_tree()
+    remove_models()
+
     print(objects)
 
 
