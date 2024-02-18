@@ -1,4 +1,4 @@
-#V0.0011
+#V0.0012
 #all import
 
 from ursina import *
@@ -20,10 +20,8 @@ list_of_cars = []
 list_of_tree = []
 list_of_all_models = []
 
-playerX = Entity(model='models/player/chicken/chiken.glb', scale=(.2, .2, .2), position=(0, -0.5, -8), collider='box')
-playerX.rotation_y = 180
-player = Entity(scale=(.3, .3, .3))
-test_cube = Entity(model='cube', position=(-2, 0, 0))
+player = Entity(model='models/player/chicken/chiken.glb', scale=(.2, .2, .2), position=(0, -0.5, -8), collider='box')
+player.rotation_y = 180
 
 camera.rotation_x = 40
 camera.rotation_y = -20
@@ -51,11 +49,6 @@ class Tree():
             self.xmodel = Entity(model='models/tree/defolte/tree2/tree2.glb', scale=(.2, .2, .2), position=(x, -0.5, z+0.2), collider='box')
             self.xmodel.rotation_y = 180
 
-#models and others
-
-Acar = Actor("models/car/defolte_red/car_red.glb")
-Acar.reparentTo(player)
-
 #funcs
 
 def generation():
@@ -77,7 +70,7 @@ def generation():
 
 def movecamera():
     global camera_speed
-    noun_x = playerX.z - (camera.z + 15)
+    noun_x = player.z - (camera.z + 15)
     noun_x /= 50
     camera_speed = noun_x
 
@@ -104,15 +97,15 @@ for i in range(-4, 15):
         objects += 1
 
 def remove_gen():
-    global list_of_roads, playerX
+    global list_of_roads, player
     for i in list_of_roads:
-        if playerX.z - i > 10:
+        if player.z - i > 10:
             list_of_roads.remove(i)
 
 def remove_models():
-    global list_of_all_models, playerX
+    global list_of_all_models, player
     for i in list_of_all_models:
-        if playerX.z - i.xmodel.z > 1:
+        if player.z - i.xmodel.z > 1:
             # i.xmodel.disable()
             i.xmodel.destroy()
             # list_of_all_models.remove(i.xmodel)
@@ -130,43 +123,43 @@ def create_car():
                 pass
 
 def cross_tree():
-    global playerX, last_key
-    if str(playerX.intersects().entities).find("model='models/tree/defolte/tree2/tree2'") != -1:
+    global player, last_key
+    if str(player.intersects().entities).find("model='models/tree/defolte/tree2/tree2'") != -1:
         print('пересечение с деревом')
-        if last_key == 'w': playerX.z -= 1
-        if last_key == 's': playerX.z += 1
-        if last_key == 'a': playerX.x += 1
-        if last_key == 'd': playerX.x -= 1
+        if last_key == 'w': player.z -= 1
+        if last_key == 's': player.z += 1
+        if last_key == 'a': player.x += 1
+        if last_key == 'd': player.x -= 1
 
 def input(key):
     global last_key
     if key == 'left mouse down':
         last_key = 'w'
         generation()
-        playerX.z += 1
-        playerX.rotation_y = 180
+        player.z += 1
+        player.rotation_y = 180
     if key == 's':
         last_key = 's'
         generation()
-        playerX.z -= 1
-        playerX.rotation_y = 0
+        player.z -= 1
+        player.rotation_y = 0
     if key == 'w':
         last_key = 'w'
         generation()
-        playerX.z += 1
-        playerX.rotation_y = 180
+        player.z += 1
+        player.rotation_y = 180
     if key == 'a':
         last_key = 'a'
         generation()
-        if playerX.x > -3.7:
-            playerX.x -= 1
-            playerX.rotation_y = 90
+        if player.x > -3.7:
+            player.x -= 1
+            player.rotation_y = 90
     if key == 'd':
         last_key = 'd'
         generation()
-        if playerX.x < 6.7:
-            playerX.x += 1
-            playerX.rotation_y = 270
+        if player.x < 6.7:
+            player.x += 1
+            player.rotation_y = 270
     if key == 'q':
         sys.exit()
     cross_tree()
@@ -176,13 +169,13 @@ def update():
     global test_cube, wait_car, objects
     movecamera()
     camera.z += 0.01
-    if playerX.z - camera.z < 10:
+    if player.z - camera.z < 10:
         sys.exit()
     wait_car += 1
     create_car()
     remove_gen()
     move_car()
-    if str(playerX.intersects().entities).find("model='models/car/defolte_red/car_red'") != -1:
+    if str(player.intersects().entities).find("model='models/car/defolte_red/car_red'") != -1:
         print('пересечение с машиной')
     cross_tree()
     #remove_models()
