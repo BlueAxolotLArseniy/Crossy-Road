@@ -1,9 +1,8 @@
-#V0.0012
+#V0.0013
 #all import
 
 from ursina import *
 import random
-from direct.actor.Actor import Actor
 import sys
 
 #start
@@ -12,7 +11,7 @@ q = None #no global!
 objects = 3
 last_key = None
 wait_car = 0
-gen = 15
+gen = -10
 camera_speed = 0
 app = Ursina()
 list_of_roads = []
@@ -49,24 +48,12 @@ class Tree():
             self.xmodel = Entity(model='models/tree/defolte/tree2/tree2.glb', scale=(.2, .2, .2), position=(x, -0.5, z+0.2), collider='box')
             self.xmodel.rotation_y = 180
 
-#funcs
+global_list_of_grass = [Grass(x) for x in range(-50, -20)]
+global_list_of_roads = [Road(x) for x in range(-50, -20)]
+global_list_of_trees = []
+global_list_of_cars = []
 
-def generation():
-    global gen, camera, objects, list_of_all_models
-    if random.randint(0, 2) != 0:
-        list_of_all_models.append(Road(gen))
-        list_of_roads.append(gen)
-        objects += 1
-    else:
-        list_of_all_models.append(Grass(gen))
-        q = Tree(gen, '2', random.randint(-3, 6))
-        list_of_all_models.append(q)
-        q = Tree(gen, '2', random.randint(-3, 6))
-        list_of_all_models.append(q)
-        q = Tree(gen, '2', random.randint(-3, 6))
-        list_of_all_models.append(q)
-        objects += 4
-    gen += 1
+#funcs
 
 def movecamera():
     global camera_speed
@@ -83,18 +70,41 @@ def move_car():
         for i in list_of_cars:
             i.xmodel.x += 0.1
 
-for i in range(5, 20):
-    Grass(-i)
-for i in range(-4, 15):
-    if random.randint(0, 1) == 0:
-        q = Road(i)
-        list_of_all_models.append(q)
+# def generation():
+#     global gen, camera, objects, list_of_all_models
+#     if random.randint(0, 2) != 0:
+#         list_of_all_models.append(Road(gen))
+#         list_of_roads.append(gen)
+#         objects += 1
+#     else:
+#         list_of_all_models.append(Grass(gen))
+#         q = Tree(gen, '2', random.randint(-3, 6))
+#         list_of_all_models.append(q)
+#         q = Tree(gen, '2', random.randint(-3, 6))
+#         list_of_all_models.append(q)
+#         q = Tree(gen, '2', random.randint(-3, 6))
+#         list_of_all_models.append(q)
+#         objects += 4
+#     gen += 1
 
-        objects += 1
+for i in range(-10, 10):
+    global_list_of_grass[0].xmodel.z = i
+    global_list_of_grass.append(global_list_of_grass.pop(0))
+
+for i in range(10, 20):
+    if random.randint(1, 3) == 3:
+        global_list_of_roads[0].xmodel.z = i
+        global_list_of_roads.append(global_list_of_roads.pop(0))
     else:
-        q = Grass(i)
-        list_of_all_models.append(q)
-        objects += 1
+        global_list_of_grass[0].xmodel.z = i
+        global_list_of_grass.append(global_list_of_grass.pop(0))
+
+def generation():
+    pass
+
+
+def move_generation():
+    pass
 
 def remove_gen():
     global list_of_roads, player
