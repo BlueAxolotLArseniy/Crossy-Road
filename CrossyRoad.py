@@ -1,4 +1,4 @@
-#V0.0015
+#V0.0016
 #all import
 
 from ursina import *
@@ -7,8 +7,7 @@ import sys
 
 #start
 
-q = None #no global!
-objects = 3
+crossing_tree = False
 last_key = None
 wait_car = 0
 gen = -10
@@ -51,7 +50,7 @@ class Tree():
 
 global_list_of_grass = [Grass(x) for x in range(-50, -20)]
 global_list_of_roads = [Road(x) for x in range(-50, -20)]
-global_list_of_trees = []
+global_list_of_trees = [Tree(x, '2', random.randint(-4, 7)) for x in range(-110, -20)]
 global_list_of_cars = []
 
 #funcs
@@ -89,6 +88,7 @@ def move_car():
 #     gen += 1
 
 def generation():
+    global global_list_of_roads, global_list_of_grass, global_list_of_trees
     for i in range(-15, 10):
         global_list_of_grass[0].xmodel.z = i
         global_list_of_grass.append(global_list_of_grass.pop(0))
@@ -101,6 +101,10 @@ def generation():
             global_list_of_grass[0].xmodel.z = i
             global_list_of_grass.append(global_list_of_grass.pop(0))
 
+            #X3
+            for _ in range(3):
+                global_list_of_trees[0].xmodel.z = i
+                global_list_of_trees.append(global_list_of_trees.pop(0))
 
 def move_generation():
     global global_list_of_roads, global_list_of_grass, biggest_coordinate
@@ -111,6 +115,11 @@ def move_generation():
     else:
         global_list_of_grass[0].xmodel.z = biggest_coordinate
         global_list_of_grass.append(global_list_of_grass.pop(0))
+
+        #X3
+        for _ in range(3):
+            global_list_of_trees[0].xmodel.z = biggest_coordinate
+            global_list_of_trees.append(global_list_of_trees.pop(0))
         biggest_coordinate += 1
 
 def remove_gen():
@@ -147,6 +156,8 @@ def cross_tree():
         if last_key == 's': player.z += 1
         if last_key == 'a': player.x += 1
         if last_key == 'd': player.x -= 1
+        return 'true'
+
 
 generation()
 
@@ -157,7 +168,8 @@ def input(key):
         if player.z - camera.z < 24:
             player.z += 1
             player.rotation_y = 180
-            move_generation()
+            if cross_tree() != 'true':
+                move_generation()
     if key == 's':
         last_key = 's'
         player.z -= 1
@@ -167,7 +179,8 @@ def input(key):
         if player.z - camera.z < 24:
             player.z += 1
             player.rotation_y = 180
-            move_generation()
+            if cross_tree() != 'true':
+                move_generation()
     if key == 'a':
         last_key = 'a'
         if player.x > -3.7:
