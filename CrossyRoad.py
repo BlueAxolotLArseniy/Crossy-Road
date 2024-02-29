@@ -49,9 +49,10 @@ class Tree():
             self.xmodel.rotation_y = 180
 
 global_list_of_grass = [Grass(x) for x in range(-50, -20)]
-global_list_of_roads = [Road(x) for x in range(-50, -20)]
+global_list_of_roads = [Road(x) for x in range(-70, -20)]
 global_list_of_trees = [Tree(x, '2', random.randint(-4, 7)) for x in range(-110, -20)]
-global_list_of_cars = []
+global_list_of_cars = [Car(x, 'red') for x in range(-170, -20)]
+global_list_of_gens = [x for x in range(-70, -20)]
 
 #funcs
 
@@ -65,10 +66,13 @@ def movecamera():
         camera.z += camera_speed
 
 def move_car():
-    global wait_car, list_of_cars
+    global wait_car, global_list_of_cars
     if wait_car % 300:
-        for i in list_of_cars:
-            i.xmodel.x += 0.1
+        for i in global_list_of_cars:
+            if i.xmodel.rotation_y == 180:
+                i.xmodel.x += 0.1
+            else:
+                i.xmodel.x -= 0.1
 
 # def generation():
 #     global gen, camera, objects, list_of_all_models
@@ -88,7 +92,7 @@ def move_car():
 #     gen += 1
 
 def generation():
-    global global_list_of_roads, global_list_of_grass, global_list_of_trees
+    global global_list_of_roads, global_list_of_grass, global_list_of_trees, global_list_of_gens
     for i in range(-15, 10):
         global_list_of_grass[0].xmodel.z = i
         global_list_of_grass.append(global_list_of_grass.pop(0))
@@ -97,6 +101,8 @@ def generation():
         if random.randint(1, 3) == 3:
             global_list_of_roads[0].xmodel.z = i
             global_list_of_roads.append(global_list_of_roads.pop(0))
+            global_list_of_gens[0] = i
+            global_list_of_gens.append(global_list_of_gens.pop(0))
         else:
             global_list_of_grass[0].xmodel.z = i
             global_list_of_grass.append(global_list_of_grass.pop(0))
@@ -111,6 +117,8 @@ def move_generation():
     if random.randint(1, 3) != 3:
         global_list_of_roads[0].xmodel.z = biggest_coordinate
         global_list_of_roads.append(global_list_of_roads.pop(0))
+        global_list_of_gens[0] = biggest_coordinate
+        global_list_of_gens.append(global_list_of_gens.pop(0))
         biggest_coordinate += 1
     else:
         global_list_of_grass[0].xmodel.z = biggest_coordinate
@@ -122,31 +130,21 @@ def move_generation():
             global_list_of_trees.append(global_list_of_trees.pop(0))
         biggest_coordinate += 1
 
-def remove_gen():
-    global list_of_roads, player
-    for i in list_of_roads:
-        if player.z - i > 10:
-            list_of_roads.remove(i)
-
-def remove_models():
-    global list_of_all_models, player
-    for i in list_of_all_models:
-        if player.z - i.xmodel.z > 1:
-            # i.xmodel.disable()
-            i.xmodel.destroy()
-            # list_of_all_models.remove(i.xmodel)
-
-def create_car():
-    global wait_car, list_of_roads, objects, list_of_cars
-    if wait_car % 20 == 0:
-        for i in list_of_roads:
-            if random.randint(0, 9) == 0:
-                q = Car(i, 'red')
-                objects += 1
-                list_of_cars.append(q)
-                list_of_all_models.append(q)
-            else:
-                pass
+def create_and_move_car():
+    global wait_car, list_of_roads, objects, list_of_cars, global_list_of_gens
+    if wait_car % 50 == 0:
+        for i in global_list_of_gens:
+            if random.randint(0, 4) == 0:
+                if random.randint(0, 1) == 1:
+                    global_list_of_cars[0].xmodel.z = i
+                    global_list_of_cars[0].xmodel.x = -12
+                    global_list_of_cars[0].xmodel.rotation_y = 180
+                    global_list_of_cars.append(global_list_of_cars.pop(0))
+                else:
+                    global_list_of_cars[0].xmodel.z = -i
+                    global_list_of_cars[0].xmodel.x = 10
+                    global_list_of_cars[0].xmodel.rotation_y = 0
+                    global_list_of_cars.append(global_list_of_cars.pop(0))
 
 def cross_tree():
     global player, last_key
@@ -203,8 +201,7 @@ def update():
     if player.z - camera.z < 10:
         sys.exit()
     wait_car += 1
-    create_car()
-    remove_gen()
+    create_and_move_car()
     move_car()
     if str(player.intersects().entities).find("model='models/car/defolte_red/car_red'") != -1:
         print('пересечение с машиной')
